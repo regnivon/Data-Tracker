@@ -61,10 +61,11 @@ drop2.set("Choose Rat Type")
 drop_entries.append(drop1)
 drop_entries.append(drop2)
 
+
 # method to write input fields to excel file
 def write_fields(entries):
     try:
-        day = day_positions[drop_entries[0].get()]
+        day = drop_entries[0].get()
         rat = rat_positions[drop_entries[1].get()]
         date = entries[0][1].get()
         if check_date(date, day, rat):
@@ -92,15 +93,19 @@ def write_fields(entries):
 
 
 # checks if rat already exists
-def check_date(date, start_row, col):
-    for row in range(start_row, start_row+6):
+def check_date(date, day, col):
+    start_row = day_positions[day]
+    next_day = choices["Day"][choices["Day"].index(day)+1]
+    for row in range(start_row, day_positions[next_day]):
         if sheet.cell(row, col).value == date:
             return True
 
 
 # finds already existing date
-def find_date(date, start_row, col):
-    for row in range(start_row, start_row+6):
+def find_date(date, day, col):
+    start_row = day_positions[day]
+    next_day = choices["Day"][choices["Day"].index(day) + 1]
+    for row in range(start_row, day_positions[next_day]):
         if sheet.cell(row, col).value == date:
             return row
 
@@ -113,17 +118,19 @@ def delete_fields():
 
 # finds cell to start putting data, creates a new row if not and updates
 # date dictionary
-def find_empty_date(start_row, col):
-    for row in range(start_row, start_row+6):
+def find_empty_date(day, col):
+    start_row = day_positions[day]
+    next_day = choices["Day"][choices["Day"].index(day) + 1]
+    for row in range(start_row, day_positions[next_day]):
         if sheet.cell(row, col).value is None:
             return row
-    sheet.insert_rows(start_row+6)
+    sheet.insert_rows(day_positions[next_day])
     while sheet.cell(row, 1).value != "Day 14":
         for key in day_positions:
             if sheet.cell(row, 1).value == "Day " + key:
                 day_positions[key] = row
         row += 1
-    return start_row+6
+    return day_positions[next_day]-1
 
 
 # build GUI
