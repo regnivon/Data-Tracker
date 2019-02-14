@@ -4,20 +4,20 @@ import os
 from openpyxl.styles import Alignment
 from tkinter import messagebox
 
-#desired fields to build interface from
+# desired fields to build interface from
 
 entry_fields = ["Date", "Paraffin Amount", "Slides Amount", "Day", "Type"]
 choices = {"Day": ["1", "4", "8", "14"], "Type": ["Young Saline", "Young Infected", "Age Saline", "Age Infected"]}
 rat_positions = {"Young Saline": 2, "Young Infected": 5, "Age Saline": 8, "Age Infected": 11}
 day_positions = {"1": 3, "4": 10, "8": 17, "14": 24}
-directory = os.getcwd()
 
-#builds a sheet if the shared one is not found, otherwise
-#just updates the day_positions dictionary
-#can make the excel file name read in from a config later if desired
+
+# builds a sheet if the shared one is not found, otherwise
+# just updates the day_positions dictionary
+# can make the excel file name read in from a config later if desired
 
 try:
-    workbook = xl.load_workbook(directory + "/Slides.xlsx")
+    workbook = xl.load_workbook("Slides.xlsx")
     sheet = workbook.active
     row = 3
     while sheet.cell(row, 1).value != "Day 14":
@@ -46,12 +46,12 @@ except FileNotFoundError:
         col += 1
 
 
-#instantiate GUI object for building
+# instantiate GUI object for building
 top = tk.Tk()
 top.title("Rat Data Tracker")
 top.configure(background='pink')
 
-#build the dropbox variables and create a list to store lists of entry fields
+# build the dropbox variables and create a list to store lists of entry fields
 entries = []
 drop_entries = []
 drop1 = tk.StringVar()
@@ -61,7 +61,7 @@ drop2.set("Choose Rat Type")
 drop_entries.append(drop1)
 drop_entries.append(drop2)
 
-#method to write input fields to excel file
+# method to write input fields to excel file
 def write_fields(entries):
     try:
         day = day_positions[drop_entries[0].get()]
@@ -86,28 +86,33 @@ def write_fields(entries):
                 text = entry[1].get()
                 sheet.cell(row, rat, text)
                 rat += 1
+        messagebox.showinfo("Success", "Written to Excel sheet.")
     except:
         messagebox.showerror("Warning", "All fields must be filled out to submit")
 
-#checks if rat already exists
+
+# checks if rat already exists
 def check_date(date, start_row, col):
     for row in range(start_row, start_row+6):
         if sheet.cell(row, col).value == date:
             return True
 
-#finds already existing date
+
+# finds already existing date
 def find_date(date, start_row, col):
     for row in range(start_row, start_row+6):
         if sheet.cell(row, col).value == date:
             return row
 
-#clears entry fields
+
+# clears entry fields
 def delete_fields():
     for entry in entries:
         entry[1].delete(0, 500)
 
-#finds cell to start putting data, creates a new row if not and updates
-#date dictionary
+
+# finds cell to start putting data, creates a new row if not and updates
+# date dictionary
 def find_empty_date(start_row, col):
     for row in range(start_row, start_row+6):
         if sheet.cell(row, col).value is None:
@@ -121,7 +126,7 @@ def find_empty_date(start_row, col):
     return start_row+6
 
 
-#build GUI
+# build GUI
 for field in entry_fields:
     row = tk.Frame(top)
     label = tk.Label(row, width=20, text=field, anchor='w', fg="gray1", bg="pink")
@@ -141,6 +146,3 @@ tk.Button(top, text="Submit", command=(lambda e=entries: write_fields(e))).pack(
 tk.Button(top, text="Clear", command=delete_fields).pack(side="left")
 top.mainloop()
 workbook.save("Slides.xlsx")
-
-
-
