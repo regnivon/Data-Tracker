@@ -54,14 +54,9 @@ def write_fields(entries):
     else:
         row = find_empty_date(day, rat)
         for entry in entries:
-            if entries.index(entry) == 0:
-                text = entry[1].get()
-                sheet.cell(row, rat, text)
-                rat += 1
-            else:
-                text = entry[1].get()
-                sheet.cell(row, rat, text)
-                rat += 1
+            text = entry[1].get()
+            sheet.cell(row, rat, text)
+            rat += 1
     update_day_dict()
     messagebox.showinfo("Success", "Written to Excel sheet.")
 
@@ -205,6 +200,5 @@ tk.Button(top, text="Quit", command=top.quit, activebackground="red").pack(side=
 tk.Button(top, text="Submit", command=(lambda e=entries: write_fields(e))).pack(side="left")
 tk.Button(top, text="Clear", command=delete_fields).pack(side="left")
 top.mainloop()
-#delete_empty_rows()
 chronological_order()
 workbook.save("Slides.xlsx")
